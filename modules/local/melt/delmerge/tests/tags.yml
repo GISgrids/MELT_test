@@ -1,0 +1,2 @@
+melt/delmerge:
+  - "modules/nf-core/melt/delmerge/**"

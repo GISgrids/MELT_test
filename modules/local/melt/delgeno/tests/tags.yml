@@ -1,0 +1,2 @@
+melt/delgeno:
+  - "modules/nf-core/melt/delgeno/**"
