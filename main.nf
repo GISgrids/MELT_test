@@ -48,7 +48,14 @@ include { MELT_DELGENO } from './modules/local/melt/delgeno/'
 // WORKFLOW: Run main analysis pipeline depending on type of input
 //
 workflow MELT_DELETION {
-    MELT_DELGENO ()
+
+    // Inputs
+	sample_ch = Channel
+			.fromPath(params.input)
+			.splitCsv(header:true)
+			.map{row -> tuple(row.sample, file(row.bam), file(row.bai))}
+    
+    MELT_DELGENO (sample_ch, params.fasta, params.fai)
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
