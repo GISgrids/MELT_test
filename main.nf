@@ -36,7 +36,6 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { MELT_DELGENO } from './modules/local/melt/delgeno/'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -44,24 +43,37 @@ include { MELT_DELGENO } from './modules/local/melt/delgeno/'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-//
-// WORKFLOW: Run main analysis pipeline depending on type of input
-//
-workflow MELT_DELETION {
+include { MELT_DELGENO } from './modules/local/melt/delgeno' 
+include { MELT_DELMERGE } from './modules/local/melt/delmerge' 
 
-    // Inputs
-	sample_ch = Channel
-			.fromPath(params.input)
-			.splitCsv(header:true)
-			.map{row -> tuple(row.sample, file(row.bam), file(row.bai))}
-    
-    MELT_DELGENO (sample_ch, params.fasta, params.fai)
-}
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+
+workflow MELT_DELETION {
+    
+    // Inputs
+	sample_ch = Channel
+			.fromPath(params.input)
+			.splitCsv(header:true)
+			.map{row -> tuple(row.sample, file(row.bam), file(row.bai))}
+            // .map{row -> tuple(row.sample, file(row.cram), file(row.crai))}
+    
+    // Modules 
+    MELT_DELGENO (
+        sample_ch, 
+        params.fasta, 
+        params.fai)
+
+    MELT_DELMERGE (
+        MELT_DELGENO.out.tsv.collect(),
+        params.fasta, 
+        params.fai)
+}
+
 
 workflow {
     MELT_DELETION ()

@@ -1,4 +1,5 @@
 process MELT_DELGENO {
+  
     // tag "$meta"
     label 'process_low'
 
@@ -15,7 +16,8 @@ process MELT_DELGENO {
     path fai
 
     output:
-    tuple val(meta), path("*.del.tsv")  , emit: tsv
+    path("*/*.tsv")    , emit: tsv // 0-base item number
+    // path("LINE1/*.del.tsv")   , emit: l1_tsv
     // path "versions.yml"                 , emit: versions
 
     when: 
@@ -24,17 +26,22 @@ process MELT_DELGENO {
     script:
     // def args = task.ext.args ?: ''
     // def prefix = task.ext.prefix ?: "${meta}"
-
-    // Set the MELT jar file to the exact file path in my local directory, as accessing the MELT.jar file within the 
-    // Docker container did not seem to work. 
-    // When upscaling to NF-tower, need to access the MELTv2.2.2 folder via AWS S3 bucket storage.
     
     """
-    java -Xmx6g -jar /opt/MELT.jar Deletion-Genotype \\
-      -bamfile ${input} \\
-      -w . \\
-      -bed /opt/add_bed_files/Hg38/AluY.deletion.bed \\
-      -h ${fasta}
+    for name in LINE1 AluY; do 
+      mkdir \${name}
+      java -Xmx6g -jar /opt/MELT.jar Deletion-Genotype \\
+        -bamfile ${input} \\
+        -w ./\${name} \\
+        -bed /opt/add_bed_files/Hg38/\${name}.deletion.bed \\
+        -h ${fasta} 
+      
+      for filename in ./\${name}/*; do
+        sampleName=\$(basename "\${filename}" .del.tsv)
+        mv "\${filename}" "\${name}/\${sampleName}_\${name}.del.tsv"
+      done
+
+    done
     """
 
     // cat <<-END_VERSIONS > versions.yml

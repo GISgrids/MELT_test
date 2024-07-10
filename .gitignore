@@ -7,4 +7,4 @@ testing/
 testing*
 *.pyc
 null/
-nf_output/
+melt_deletion
