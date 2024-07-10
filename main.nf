@@ -59,8 +59,7 @@ workflow MELT_DELETION {
 	sample_ch = Channel
 			.fromPath(params.input)
 			.splitCsv(header:true)
-			.map{row -> tuple(row.sample, file(row.bam), file(row.bai))}
-            // .map{row -> tuple(row.sample, file(row.cram), file(row.crai))}
+			.map{row -> tuple(row.sample, file(row.alignmentmap), file(row.index))}
     
     // Modules 
     MELT_DELGENO (
