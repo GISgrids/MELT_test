@@ -1,6 +1,6 @@
 process MELT_DELGENO {
   
-    // tag "$meta"
+    tag "$meta.id"
     label 'process_low'
 
     // ### The template commands for loading containers have been commented out. ###
@@ -8,6 +8,7 @@ process MELT_DELGENO {
     // container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
     //    'https://depot.galaxyproject.org/singularity/melt:1.0.3--py36_2':
     //    'biocontainers/melt:1.0.3--py36_2' }"
+    //conda (params.enable_conda ? "conda-forge::python=3.9.5" : null)
     container 'bioinfo4cabbage/melt:1.0'
 
     input:
@@ -16,21 +17,21 @@ process MELT_DELGENO {
     path fai
 
     output:
-    path("*/*.tsv")    , emit: tsv // 0-base item number
-    // path("LINE1/*.del.tsv")   , emit: l1_tsv
+    path("*/*.tsv")    , emit: tsv  
     // path "versions.yml"                 , emit: versions
 
     when: 
     task.ext.when == null || task.ext.when
 
     script:
-    // def args = task.ext.args ?: ''
-    // def prefix = task.ext.prefix ?: "${meta}"
+    def args = task.ext.args ?: ''
+    def prefix = task.ext.prefix ?: "$meta.id"
     
     """
     for name in LINE1 AluY; do 
       mkdir \${name}
       java -Xmx6g -jar /opt/MELT.jar Deletion-Genotype \\
+        $args \\
         -bamfile ${input} \\
         -w ./\${name} \\
         -bed /opt/add_bed_files/Hg38/\${name}.deletion.bed \\

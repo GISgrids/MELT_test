@@ -9,7 +9,6 @@
 ----------------------------------------------------------------------------------------
 */
 
-nextflow.enable.dsl = 2
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,8 +42,7 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { EVIDENCE_COLLECTION } from './workflows/local/evidence_collection'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils/pipeline-initialisation'
+include { MELT_DELETION } from '../../../subworkflows/local/melt/melt-deletion' 
 
 
 /*
@@ -53,31 +51,14 @@ include { PIPELINE_INITIALISATION } from './subworkflows/local/utils/pipeline-in
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow SV_PIPELINE {
+workflow EVIDENCE_COLLECTION {
     
     take:
-    samplesheet // channel: samplesheet read in from --input
+    ch_samplesheet
 
     main:
-
-    // 
-    // Workflow: Run SV calling pipeline
-    //
-    EVIDENCE_COLLECTION (
-        samplesheet
-    )
-
-}
-
-
-workflow {
-
-    PIPELINE_INITIALISATION (
-        params.input
-    )
-
-    SV_PIPELINE (
-        PIPELINE_INITIALISATION.out.samplesheet
+    MELT_DELETION (
+        ch_samplesheet
     )
 
 }

@@ -9,7 +9,6 @@
 ----------------------------------------------------------------------------------------
 */
 
-nextflow.enable.dsl = 2
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,9 +42,7 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { EVIDENCE_COLLECTION } from './workflows/local/evidence_collection'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils/pipeline-initialisation'
-
+include { SAMPLESHEET_CHECK } from '../../../../modules/local/samplesheet_check'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,33 +50,30 @@ include { PIPELINE_INITIALISATION } from './subworkflows/local/utils/pipeline-in
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow SV_PIPELINE {
+workflow PIPELINE_INITIALISATION {
     
+    //
+    // Inputs
+    //
     take:
-    samplesheet // channel: samplesheet read in from --input
+    inputsheet        // String: Path to input samplesheet
 
     main:
+    SAMPLESHEET_CHECK ( inputsheet )
+        .csv
+        .splitCsv(header:true, sep:',')
+        .map {create_samplesheet_channel(it) }
+        .set { ch_samplesheet }
 
-    // 
-    // Workflow: Run SV calling pipeline
-    //
-    EVIDENCE_COLLECTION (
-        samplesheet
-    )
-
+    emit:
+    samplesheet = ch_samplesheet
 }
 
-
-workflow {
-
-    PIPELINE_INITIALISATION (
-        params.input
-    )
-
-    SV_PIPELINE (
-        PIPELINE_INITIALISATION.out.samplesheet
-    )
-
+def create_samplesheet_channel(LinkedHashMap row) {
+    def meta = [:]
+    meta.id = row.sample
+    sample_metamap = [ meta, file(row.mapped), file(row.index) ]
+    return sample_metamap
 }
 
 /*

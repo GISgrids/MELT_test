@@ -9,7 +9,6 @@
 ----------------------------------------------------------------------------------------
 */
 
-nextflow.enable.dsl = 2
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,8 +42,8 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { EVIDENCE_COLLECTION } from './workflows/local/evidence_collection'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils/pipeline-initialisation'
+include { MELT_DELGENO } from '../../../../modules/local/melt/delgeno' 
+include { MELT_DELMERGE } from '../../../../modules/local/melt/delmerge' 
 
 
 /*
@@ -53,33 +52,25 @@ include { PIPELINE_INITIALISATION } from './subworkflows/local/utils/pipeline-in
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow SV_PIPELINE {
+workflow MELT_DELETION {
     
-    take:
-    samplesheet // channel: samplesheet read in from --input
+    // Inputs
+	take:
+    samplesheet
+    
 
+    // Modules 
     main:
 
-    // 
-    // Workflow: Run SV calling pipeline
-    //
-    EVIDENCE_COLLECTION (
-        samplesheet
-    )
+    MELT_DELGENO (
+        samplesheet, 
+        params.fasta, 
+        params.fai)
 
-}
-
-
-workflow {
-
-    PIPELINE_INITIALISATION (
-        params.input
-    )
-
-    SV_PIPELINE (
-        PIPELINE_INITIALISATION.out.samplesheet
-    )
-
+    MELT_DELMERGE (
+        MELT_DELGENO.out.tsv.collect(),
+        params.fasta, 
+        params.fai)
 }
 
 /*

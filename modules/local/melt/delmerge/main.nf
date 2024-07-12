@@ -1,6 +1,6 @@
 process MELT_DELMERGE {
 
-    // tag "$meta"
+    tag "MELT-Deletion-Merging"
     label 'process_low'
 
     // ### The template commands for loading containers have been commented out. ###
@@ -16,15 +16,14 @@ process MELT_DELMERGE {
     path fai
 
     output:
-    path("*/*.vcf")  , emit: vcf // 0-base item number (important in the MELT_DELMERGE process)
-    // path("LINE1/*.vcf")  , emit: l1_vcf
+    path("*/*.vcf")  , emit: vcf
     // path "versions.yml"                 , emit: versions
 
     when: 
     task.ext.when == null || task.ext.when
 
     script:
-    // def args = task.ext.args ?: ''
+    def args = task.ext.args ?: ''
     // def prefix = task.ext.prefix ?: "${meta}"
 
     // Set the MELT jar file to the exact file path in my local directory, as accessing the MELT.jar file within the 
@@ -39,10 +38,12 @@ process MELT_DELMERGE {
       ls *\${name}.del.tsv > list_of_outputs_\${name}.txt
       mkdir \${name}
       java -Xmx6g -jar /opt/MELT.jar Deletion-Merge \\
+        $args \\
         -mergelist `pwd`/list_of_outputs_\${name}.txt \\
         -bed /opt/add_bed_files/Hg38/\${name}.deletion.bed \\
         -h ${fasta} \\
         -o ./\${name}
+      mv ./\${name}/DEL.final_comp.vcf ./\${name}/MELT_Deletion_\${name}.vcf
     done
     """
 
