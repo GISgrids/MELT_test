@@ -52,6 +52,8 @@ include { MELT_DELMERGE } from '../../../../modules/local/melt/delmerge'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+mobileElements_del_ch = Channel.of("AluY", "LINE1")
+
 workflow MELT_DELETION {
     
     // Inputs
@@ -63,12 +65,14 @@ workflow MELT_DELETION {
     main:
 
     MELT_DELGENO (
-        samplesheet, 
+        samplesheet,
+        mobileElements_del_ch,
         params.fasta, 
         params.fai)
 
     MELT_DELMERGE (
-        MELT_DELGENO.out.tsv.collect(),
+        MELT_DELGENO.out.meltdelgeno_ch.collect(),
+        mobileElements_del_ch,
         params.fasta, 
         params.fai)
 }

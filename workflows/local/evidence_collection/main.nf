@@ -43,6 +43,7 @@
 */
 
 include { MELT_DELETION } from '../../../subworkflows/local/melt/melt-deletion' 
+include { MELT_INSERTION } from '../../../subworkflows/local/melt/melt-insertion' 
 
 
 /*
@@ -57,10 +58,15 @@ workflow EVIDENCE_COLLECTION {
     ch_samplesheet
 
     main:
-    MELT_DELETION (
+
+    MELT_INSERTION (
         ch_samplesheet
     )
 
+    MELT_DELETION (
+        ch_samplesheet
+    )
+    
 }
 
 /*

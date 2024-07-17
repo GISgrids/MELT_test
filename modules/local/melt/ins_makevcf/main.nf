@@ -1,6 +1,6 @@
-process MELT_DELMERGE {
-
-    tag "MELT-Deletion-Merging"
+process MELT_INS_MAKEVCF {
+  
+    tag "MAKE_VCF"
     label 'process_low'
 
     // ### The template commands for loading containers have been commented out. ###
@@ -8,41 +8,50 @@ process MELT_DELMERGE {
     // container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
     //    'https://depot.galaxyproject.org/singularity/melt:1.0.3--py36_2':
     //    'biocontainers/melt:1.0.3--py36_2' }"
+    //conda (params.enable_conda ? "conda-forge::python=3.9.5" : null)
     container 'bioinfo4cabbage/melt:1.0'
 
     input:
-    path meltdelgeno_ch
-    each mobileElementDel
+    path meltgroupanalysis_ch
+    path meltgenotype_ch
+    each mobileElementIns
     path fasta
     path fai
 
     output:
-    path("*/*.vcf")  , emit: meltdelmerge_ch
+    path("*/*/*.vcf")                                  , emit: meltmakevcf_ch
     // path "versions.yml"                 , emit: versions
 
     when: 
     task.ext.when == null || task.ext.when
 
+    //
+    // What are the files required?
+    // Step 3 GroupAnalysis output
+    // Step 4 Genotyping output
+    //
+
+    //
+    // This step will create a single VCF file for each ME type (i.e. LINE1, ALU, SVA, etc.) 
+    // 
+
     script:
     def args = task.ext.args ?: ''
-    // def prefix = task.ext.prefix ?: "${meta}"
-
-    // Set the MELT jar file to the exact file path in my local directory, as accessing the MELT.jar file within the 
-    // Docker container did not seem to work. 
-    // When upscaling to NF-tower, need to access the MELTv2.2.2 folder via AWS S3 bucket storage.
+    //def prefix = task.ext.prefix ?: "$meta.id"
     
-    // ls *.tsv > `pwd`/list_of_outputs.txt
     """
-    ls *.${mobileElementDel}.del.tsv > list_of_outputs_${mobileElementDel}.txt
-    mkdir ${mobileElementDel}_DELETION
-    java -Xmx6g -jar /opt/MELT.jar Deletion-Merge \\
-      $args \\
-      -mergelist list_of_outputs_${mobileElementDel}.txt \\
-      -bed /opt/add_bed_files/Hg38/${mobileElementDel}.deletion.bed \\
-      -h ${fasta} \\
-      -o ${mobileElementDel}_DELETION
-    
-    mv ./${mobileElementDel}_DELETION/DEL.final_comp.vcf ./${mobileElementDel}_DELETION/MELT_Deletion_${mobileElementDel}_merged.vcf
+    mkdir -p ${mobileElementIns}_DISCOVERY/FINAL_VCF ${mobileElementIns}_DISCOVERY/GroupAnalysis ${mobileElementIns}_DISCOVERY/Genotype
+    mv *${mobileElementIns}.tsv ${mobileElementIns}_DISCOVERY/Genotype
+    mv ${mobileElementIns}.* ${mobileElementIns}_DISCOVERY/GroupAnalysis
+
+    java -Xmx6G -jar /opt/MELT.jar MakeVCF \\
+        $args \\
+        -genotypingdir ${mobileElementIns}_DISCOVERY/Genotype \\
+        -h ${fasta} \\
+        -t /opt/me_refs/Hg38/${mobileElementIns}_MELT.zip \\
+        -w ${mobileElementIns}_DISCOVERY/FINAL_VCF \\
+        -p ${mobileElementIns}_DISCOVERY/GroupAnalysis \\
+        -o ${mobileElementIns}_DISCOVERY/FINAL_VCF
     """
 
     // cat <<-END_VERSIONS > versions.yml
@@ -68,3 +77,4 @@ process MELT_DELMERGE {
     // END_VERSIONS
     // """
 }
+

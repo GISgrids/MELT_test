@@ -13,11 +13,12 @@ process MELT_DELGENO {
 
     input:
     tuple val(meta), path(input), path(input_index)
+    each mobileElementDel
     path fasta
     path fai
 
     output:
-    path("*/*.tsv")    , emit: tsv  
+    path("*/*/*.tsv")    , emit: meltdelgeno_ch  
     // path "versions.yml"                 , emit: versions
 
     when: 
@@ -28,21 +29,16 @@ process MELT_DELGENO {
     def prefix = task.ext.prefix ?: "$meta.id"
     
     """
-    for name in LINE1 AluY; do 
-      mkdir \${name}
-      java -Xmx6g -jar /opt/MELT.jar Deletion-Genotype \\
-        $args \\
-        -bamfile ${input} \\
-        -w ./\${name} \\
-        -bed /opt/add_bed_files/Hg38/\${name}.deletion.bed \\
-        -h ${fasta} 
-      
-      for filename in ./\${name}/*; do
-        sampleName=\$(basename "\${filename}" .del.tsv)
-        mv "\${filename}" "\${name}/\${sampleName}_\${name}.del.tsv"
-      done
-
-    done
+    mkdir -p ${mobileElementDel}_DELETION/tsv
+    java -Xmx6g -jar /opt/MELT.jar Deletion-Genotype \\
+      $args \\
+      -bamfile ${input} \\
+      -w . \\
+      -bed /opt/add_bed_files/Hg38/${mobileElementDel}.deletion.bed \\
+      -h ${fasta} 
+    
+    sampleName=\$(basename ${meta.id}*.del.tsv .del.tsv)
+    mv \${sampleName}.del.tsv ${mobileElementDel}_DELETION/tsv/\${sampleName}.${mobileElementDel}.del.tsv
     """
 
     // cat <<-END_VERSIONS > versions.yml
