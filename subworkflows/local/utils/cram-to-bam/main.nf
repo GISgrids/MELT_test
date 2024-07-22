@@ -42,9 +42,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { MELT_DELGENO } from '../../../../modules/local/melt/delgeno' 
-include { MELT_DELMERGE } from '../../../../modules/local/melt/delmerge' 
-
+include { CRAMTOBAM } from '../../../../modules/local/cramtobam'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,31 +50,23 @@ include { MELT_DELMERGE } from '../../../../modules/local/melt/delmerge'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-mobileElements_del_ch = Channel.of("AluY", "LINE1")
-
-workflow MELT_DELETION {
+workflow CRAM_TO_BAM {
     
+    //
     // Inputs
-	take:
-    samplesheet
-    
+    //
+    take:
+    samplesheet        // String: Path to input samplesheet
 
-    // Modules 
     main:
-
-    MELT_DELGENO (
+    CRAMTOBAM (
         samplesheet,
-        mobileElements_del_ch,
         params.fasta, 
         params.fai
     )
 
-    MELT_DELMERGE (
-        MELT_DELGENO.out.meltdelgeno_ch.collect(),
-        mobileElements_del_ch,
-        params.fasta, 
-        params.fai
-    )
+    //emit:
+    //ch_bamfiles
 }
 
 /*

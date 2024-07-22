@@ -1,6 +1,6 @@
 process MELT_INS_GROUPANALYSIS {
   
-    tag "GROUP_ANALYSIS"
+    tag "MELT-Insertion-GroupAnalysis"
     label 'process_low'
 
     // ### The template commands for loading containers have been commented out. ###

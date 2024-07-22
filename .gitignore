@@ -3,9 +3,12 @@ work/
 data/
 results/
 .DS_Store
-testing/
+testing/cd .
 testing*
 *.pyc
 null/
 melt_*
 input*
+whamg_*
+evidence_collection_*
+testing_*

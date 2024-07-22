@@ -1,6 +1,6 @@
 process MELT_INS_MAKEVCF {
   
-    tag "MAKE_VCF"
+    tag "MELT-Insertion-MakeVCF"
     label 'process_low'
 
     // ### The template commands for loading containers have been commented out. ###

@@ -42,9 +42,10 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+include { CRAM_TO_BAM } from '../../../subworkflows/local/utils/cram-to-bam'
 include { MELT_DELETION } from '../../../subworkflows/local/melt/melt-deletion' 
 include { MELT_INSERTION } from '../../../subworkflows/local/melt/melt-insertion' 
-
+include { WHAMG } from '../../../subworkflows/local/whamg'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,17 +57,18 @@ workflow EVIDENCE_COLLECTION {
     
     take:
     ch_samplesheet
+    //ch_bamfiles
 
     main:
 
-    MELT_INSERTION (
-        ch_samplesheet
-    )
+    CRAM_TO_BAM ( ch_samplesheet )
 
-    MELT_DELETION (
-        ch_samplesheet
-    )
+    MELT_INSERTION ( ch_samplesheet )
+
+    MELT_DELETION ( ch_samplesheet )
     
+    WHAMG ( ch_samplesheet )
+
 }
 
 /*
