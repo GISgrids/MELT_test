@@ -66,7 +66,7 @@ workflow PIPELINE_INITIALISATION {
         .set { ch_samplesheet }
 
     emit:
-    samplesheet = ch_samplesheet
+    ch_samplesheet
 }
 
 def create_samplesheet_channel(LinkedHashMap row) {

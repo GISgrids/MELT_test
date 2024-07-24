@@ -11,7 +11,7 @@ process CRAMTOBAM {
     path fai
 
     output:
-    tuple val(meta), path("*.bam",includeInputs:true), path("*.bai",includeInputs:true)          , emit: ch_bamfiles
+    tuple val(meta), path("*.bam",includeInputs:true), path("*.bai",includeInputs:true)          , emit: ch_alignmentfiles
     //path "versions.yml"                     , emit: versions
 
     when:

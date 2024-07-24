@@ -42,10 +42,12 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { CRAM_TO_BAM } from '../../../subworkflows/local/utils/cram-to-bam'
+include { CRAMTOBAM } from '../../../modules/local/cramtobam'
 include { MELT_DELETION } from '../../../subworkflows/local/melt/melt-deletion' 
 include { MELT_INSERTION } from '../../../subworkflows/local/melt/melt-insertion' 
+include { SCRAMBLE } from '../../../subworkflows/local/scramble'
 include { WHAMG } from '../../../subworkflows/local/whamg'
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,17 +59,50 @@ workflow EVIDENCE_COLLECTION {
     
     take:
     ch_samplesheet
-    //ch_bamfiles
 
     main:
 
-    CRAM_TO_BAM ( ch_samplesheet )
+    // --------------------------------------------------
+    // STEP 1: CONVERSION OF INPUT FILES FROM CRAM TO BAM
+    // A new channel: ch_alignmentfiles, would be created regardless.
+    // 
+    if (params.cramtobam) {
+        CRAMTOBAM (
+            ch_samplesheet,
+            params.fasta, 
+            params.fai
+        ).set { ch_alignmentfiles }
+    }
 
-    MELT_INSERTION ( ch_samplesheet )
-
-    MELT_DELETION ( ch_samplesheet )
+    if (!params.cramtobam) {
+        ch_alignmentfiles = ch_samplesheet
+    }
+    // ==================================================
     
-    WHAMG ( ch_samplesheet )
+
+    // --------------------------------------------------
+    // STEP 2: RUNNING MELT INSERTION FOR NOVEL ME DISCOVERY AND MELT DELETION
+    //
+    MELT_INSERTION ( ch_alignmentfiles )
+
+    MELT_DELETION ( ch_alignmentfiles )
+    // ==================================================
+
+    
+    // --------------------------------------------------
+    // STEP 3:
+    //
+    if (params.cramtobam) {
+        WHAMG ( ch_alignmentfiles )
+    }
+    // ==================================================
+
+
+    // --------------------------------------------------
+    // STEP 4: RUNNING SCRAMBLE
+    // 
+    SCRAMBLE ( ch_alignmentfiles )
+    // ==================================================
 
 }
 

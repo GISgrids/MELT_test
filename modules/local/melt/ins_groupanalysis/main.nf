@@ -26,9 +26,8 @@ process MELT_INS_GROUPANALYSIS {
     task.ext.when == null || task.ext.when
 
     //
-    // All the 6 files generated from the IndivAnalysis step (listed in that module's main.nf) are required for MELT to
+    // All the 6 files + the .tmp.bed file generated from the IndivAnalysis step (listed in that module's main.nf) are required for MELT to
     // perform GroupAnalysis, if not it will exit with an error code, causing Nextflow to exit as well.
-    // Read the melt_insertion subworkflow script regarding the creation of mobileElements_ins_ch for more information.
     //
 
     //

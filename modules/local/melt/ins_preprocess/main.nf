@@ -17,7 +17,8 @@ process MELT_INS_PREPROCESS {
     path fai
 
     output:
-    tuple val(meta), path("MELT_INS_Preprocess/*.bam*"),    emit: meltpreprocess_ch
+    tuple val(meta), path("MELT_INS_Preprocess/*"),    emit: meltpreprocess_ch
+
     // path "versions.yml"                 , emit: versions
 
     when: 
@@ -37,7 +38,7 @@ process MELT_INS_PREPROCESS {
         $args \\
         -bamfile ${input} \\
         -h ${fasta}
-    mv *.bam* MELT_INS_Preprocess
+    mv `ls *.cram* *.bam*` MELT_INS_Preprocess
     """
 
     // cat <<-END_VERSIONS > versions.yml

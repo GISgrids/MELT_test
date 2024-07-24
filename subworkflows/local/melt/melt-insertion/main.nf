@@ -65,14 +65,14 @@ workflow MELT_INSERTION {
     
     // Inputs
 	take:
-    samplesheet
+    ch_alignmentfiles
     
 
     // Modules 
     main:
 
     MELT_INS_PREPROCESS (
-        samplesheet, 
+        ch_alignmentfiles, 
         params.fasta, 
         params.fai
     )
@@ -93,7 +93,7 @@ workflow MELT_INSERTION {
     )
 
     MELT_INS_GENOTYPE (
-        samplesheet,
+        ch_alignmentfiles,
         MELT_INS_GROUPANALYSIS.out.meltgroupanalysis_ch.collect(),
         mobileElements_ins_ch,
         params.fasta, 

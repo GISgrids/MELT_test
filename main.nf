@@ -56,7 +56,7 @@ include { PIPELINE_INITIALISATION } from './subworkflows/local/utils/pipeline-in
 workflow SV_PIPELINE {
     
     take:
-    samplesheet // channel: samplesheet read in from --input
+    ch_samplesheet // channel: samplesheet read in from --input
 
     main:
 
@@ -64,7 +64,7 @@ workflow SV_PIPELINE {
     // Workflow: Run SV calling pipeline
     //
     EVIDENCE_COLLECTION (
-        samplesheet
+        ch_samplesheet
     )
 
 }
@@ -77,7 +77,7 @@ workflow {
     )
 
     SV_PIPELINE (
-        PIPELINE_INITIALISATION.out.samplesheet
+        PIPELINE_INITIALISATION.out.ch_samplesheet
     )
 
 }

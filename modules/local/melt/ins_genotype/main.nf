@@ -26,7 +26,7 @@ process MELT_INS_GENOTYPE {
     task.ext.when == null || task.ext.when
 
     //
-    // only need the 6 files produced in group analysis
+    // only require the 6 files produced in GroupAnalysis, and the original CRAM/BAM file for each sample.
     //
 
     //

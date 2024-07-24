@@ -58,14 +58,14 @@ workflow MELT_DELETION {
     
     // Inputs
 	take:
-    samplesheet
+    ch_alignmentfiles
     
 
     // Modules 
     main:
 
     MELT_DELGENO (
-        samplesheet,
+        ch_alignmentfiles,
         mobileElements_del_ch,
         params.fasta, 
         params.fai

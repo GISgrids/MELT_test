@@ -24,6 +24,10 @@ process MELT_DELGENO {
     when: 
     task.ext.when == null || task.ext.when
 
+    //
+    // This step would generate .tsv files for every sample, which would be collectively used for the next step: Deletion-Merge.
+    //
+
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "$meta.id"

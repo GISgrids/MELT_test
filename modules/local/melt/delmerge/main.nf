@@ -25,13 +25,11 @@ process MELT_DELMERGE {
 
     script:
     def args = task.ext.args ?: ''
-    // def prefix = task.ext.prefix ?: "${meta}"
-
-    // Set the MELT jar file to the exact file path in my local directory, as accessing the MELT.jar file within the 
-    // Docker container did not seem to work. 
-    // When upscaling to NF-tower, need to access the MELTv2.2.2 folder via AWS S3 bucket storage.
     
-    // ls *.tsv > `pwd`/list_of_outputs.txt
+    //
+    // Generation of MELT Deletion's final merged VCF 
+    //
+
     """
     ls *.${mobileElementDel}.del.tsv > list_of_outputs_${mobileElementDel}.txt
     mkdir ${mobileElementDel}_DELETION

@@ -25,6 +25,8 @@ process WHAMG_SV {
     def args3 = task.ext.args3 ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
 
+    // WHAMG can only take in BAM files; will freeze when CRAM files are input.
+
     """
     whamg \\
         -x ${task.cpus} \\

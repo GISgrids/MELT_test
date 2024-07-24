@@ -42,7 +42,8 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { CRAMTOBAM } from '../../../../modules/local/cramtobam'
+include { SCRAMBLE_CLUSTERIDENTIFIER } from '../../../modules/local/scramble/clusteridentifier' 
+include { SCRAMBLE_CLUSTERANALYSIS } from '../../../modules/local/scramble/clusteranalysis' 
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -50,23 +51,27 @@ include { CRAMTOBAM } from '../../../../modules/local/cramtobam'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow CRAM_TO_BAM {
+workflow SCRAMBLE {
     
-    //
     // Inputs
-    //
-    take:
-    samplesheet        // String: Path to input samplesheet
+	take:
+    ch_alignmentfiles
+    
 
+    // Modules 
     main:
-    CRAMTOBAM (
-        samplesheet,
+
+    SCRAMBLE_CLUSTERIDENTIFIER (
+        ch_alignmentfiles,
         params.fasta, 
         params.fai
     )
 
-    //emit:
-    //ch_bamfiles
+    SCRAMBLE_CLUSTERANALYSIS (
+        SCRAMBLE_CLUSTERIDENTIFIER.out[0],
+        params.fasta, 
+        params.fai
+    )
 }
 
 /*

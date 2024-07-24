@@ -33,7 +33,9 @@ process MELT_INS_INDIVANALYSIS {
     // 4. ME_name.aligned.pulled.sorted.bam.bai
     // 5. ME_name.hum_breaks.sorted.bam
     // 6. ME_name.hum_breaks.sorted.bam.bai
-    // If files 5 and 6 (.hum*) are not present, it means that MELT failed to detect any of that type of ME in the sample's genome specified.
+    // If files 5 and 6 (.hum*) are not present, it means that MELT failed to detect any of that type of ME in the sample genome specified.
+    //
+    // A .tmp.bed file would also be created for each sample, which is REQUIRED for the next step, GroupAnalysis
     //
 
     script:
@@ -44,7 +46,7 @@ process MELT_INS_INDIVANALYSIS {
     mkdir -p ${mobileElementIns}_DISCOVERY/IndivAnalysis
     java -Xmx6G -jar /opt/MELT.jar IndivAnalysis \\
         $args \\
-        -bamfile $meta.id*.bam \\
+        -bamfile `ls $meta.id*.cram* $meta.id*.bam*` \\
         -w ./${mobileElementIns}_DISCOVERY/IndivAnalysis \\
         -t /opt/me_refs/Hg38/${mobileElementIns}_MELT.zip \\
         -h ${fasta}
