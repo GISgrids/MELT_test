@@ -19,7 +19,7 @@ process MELT_DELGENO {
 
     output:
     path("*/*/*.tsv")    , emit: meltdelgeno_ch  
-    // path "versions.yml"                 , emit: versions
+    path "versions.yml"                 , emit: versions
 
     when: 
     task.ext.when == null || task.ext.when
@@ -31,6 +31,7 @@ process MELT_DELGENO {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "$meta.id"
+    def MELT_VERSION = '2.2.2'
     
     """
     mkdir -p ${mobileElementDel}_DELETION/tsv
@@ -43,13 +44,13 @@ process MELT_DELGENO {
     
     sampleName=\$(basename ${meta.id}*.del.tsv .del.tsv)
     mv \${sampleName}.del.tsv ${mobileElementDel}_DELETION/tsv/\${sampleName}.${mobileElementDel}.del.tsv
-    """
 
-    // cat <<-END_VERSIONS > versions.yml
-    // "${task.process}":
-    //    melt: \$(samtools --version |& sed '1!d ; s/samtools //')
-    // END_VERSIONS
-    // """
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        MELT: ${MELT_VERSION}
+    END_VERSIONS
+    """
 
     // stub: ####
     // def args = task.ext.args ?: ''

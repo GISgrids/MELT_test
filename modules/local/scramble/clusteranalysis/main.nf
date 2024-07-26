@@ -17,10 +17,10 @@ process SCRAMBLE_CLUSTERANALYSIS {
     path fai
 
     output:
-    tuple val(meta), path("cluster_analysis_files/*_MEIs.txt")                 , optional:true, emit: meis_tab
-    tuple val(meta), path("cluster_analysis_files/*_PredictedDeletions.txt")   , optional:true, emit: dels_tab
-    tuple val(meta), path("*.vcf")                      , optional:true, emit: vcf
-    //path "versions.yml"                                 , emit: versions
+    tuple val(meta), path("cluster_analysis_files/*_MEIs.txt")                  , optional:true, emit: meis_tab
+    tuple val(meta), path("cluster_analysis_files/*_PredictedDeletions.txt")    , optional:true, emit: dels_tab
+    tuple val(meta), path("*.vcf")                                              , optional:true, emit: vcf
+    path "versions.yml"                                                         , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -28,7 +28,7 @@ process SCRAMBLE_CLUSTERANALYSIS {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+    def VERSION = '1.0.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
     // def blastdb = args.contains("--eval-dels") ? "makeblastdb -in ${fasta} -parse_seqids -title ${fasta} -dbtype nucl -out ${fasta}" : ""
     def reference = fasta ? "--ref `pwd`/${fasta}" : ""
@@ -37,7 +37,7 @@ process SCRAMBLE_CLUSTERANALYSIS {
     //def mei_reference = mei_ref ? "`pwd`/${mei_ref}" : "/app/cluster_analysis/resources/MEI_consensus_seqs.fa"
     def mei_reference = '/app/cluster_analysis/resources/MEI_consensus_seqs.fa'
 
-    def blastdb_version = args.contains("--eval-dels") ? "makeblastdb: \$(echo \$(makeblastdb -version 2>&1) | head -n 1 | sed 's/^makeblastdb: //; s/+ Package.*\$//')" : ""
+    def blastdb_version = "makeblastdb: \$(echo \$(makeblastdb -version 2>&1) | head -n 1 | sed 's/^makeblastdb: //; s/+ Package.*\$//')"
     """    
     makeblastdb -in `pwd`/${fasta} -dbtype nucl
 
@@ -52,12 +52,12 @@ process SCRAMBLE_CLUSTERANALYSIS {
     
     mkdir cluster_analysis_files
     mv *.txt cluster_analysis_files
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        scramble: ${VERSION}
+        blast_db: ${blastdb_version}
+    END_VERSIONS
     """
-
-    //cat <<-END_VERSIONS > versions.yml
-    //"${task.process}":
-    //    scramble: ${VERSION}
-    //    ${blastdb_version}
-    //END_VERSIONS
 
 }

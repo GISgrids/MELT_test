@@ -18,9 +18,9 @@ process MELT_INS_INDIVANALYSIS {
     path fai
 
     output:
-    path("*/*/*.bam*")                                  , emit: meltindivanalysis_bam_ch
-    path("*/*/*.bed")                                   , emit: meltindivanalysis_bed_ch
-    // path "versions.yml"                 , emit: versions
+    path("*/*/*.bam*")                  , emit: meltindivanalysis_bam_ch
+    path("*/*/*.bed")                   , emit: meltindivanalysis_bed_ch
+    path "versions.yml"                 , emit: versions
 
     when: 
     task.ext.when == null || task.ext.when
@@ -41,6 +41,7 @@ process MELT_INS_INDIVANALYSIS {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "$meta.id"
+    def MELT_VERSION = '2.2.2'
     
     """
     mkdir -p ${mobileElementIns}_DISCOVERY/IndivAnalysis
@@ -50,13 +51,12 @@ process MELT_INS_INDIVANALYSIS {
         -w ./${mobileElementIns}_DISCOVERY/IndivAnalysis \\
         -t /opt/me_refs/Hg38/${mobileElementIns}_MELT.zip \\
         -h ${fasta}
-    """
 
-    // cat <<-END_VERSIONS > versions.yml
-    // "${task.process}":
-    //    melt: \$(samtools --version |& sed '1!d ; s/samtools //')
-    // END_VERSIONS
-    // """
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        MELT: ${MELT_VERSION}
+    END_VERSIONS
+    """
 
     // stub: ####
     // def args = task.ext.args ?: ''

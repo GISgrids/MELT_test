@@ -42,11 +42,11 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { CRAMTOBAM } from '../../../modules/local/cramtobam'
 include { MELT_DELETION } from '../../../subworkflows/local/melt/melt-deletion' 
 include { MELT_INSERTION } from '../../../subworkflows/local/melt/melt-insertion' 
 include { SCRAMBLE } from '../../../subworkflows/local/scramble'
 include { WHAMG } from '../../../subworkflows/local/whamg'
+include { MANTA } from '../../../subworkflows/local/manta'
 
 
 /*
@@ -58,30 +58,13 @@ include { WHAMG } from '../../../subworkflows/local/whamg'
 workflow EVIDENCE_COLLECTION {
     
     take:
-    ch_samplesheet
+    ch_alignmentfiles
+    ch_manta
 
     main:
 
     // --------------------------------------------------
-    // STEP 1: CONVERSION OF INPUT FILES FROM CRAM TO BAM
-    // A new channel: ch_alignmentfiles, would be created regardless.
-    // 
-    if (params.cramtobam) {
-        CRAMTOBAM (
-            ch_samplesheet,
-            params.fasta, 
-            params.fai
-        ).set { ch_alignmentfiles }
-    }
-
-    if (!params.cramtobam) {
-        ch_alignmentfiles = ch_samplesheet
-    }
-    // ==================================================
-    
-
-    // --------------------------------------------------
-    // STEP 2: RUNNING MELT INSERTION FOR NOVEL ME DISCOVERY AND MELT DELETION
+    // STEP 1: RUNNING MELT INSERTION FOR NOVEL ME DISCOVERY AND MELT DELETION
     //
     MELT_INSERTION ( ch_alignmentfiles )
 
@@ -90,7 +73,7 @@ workflow EVIDENCE_COLLECTION {
 
     
     // --------------------------------------------------
-    // STEP 3:
+    // STEP 2:
     //
     if (params.cramtobam) {
         WHAMG ( ch_alignmentfiles )
@@ -99,9 +82,16 @@ workflow EVIDENCE_COLLECTION {
 
 
     // --------------------------------------------------
-    // STEP 4: RUNNING SCRAMBLE
+    // STEP 3: RUNNING SCRAMBLE
     // 
     SCRAMBLE ( ch_alignmentfiles )
+    // ==================================================
+
+
+    // --------------------------------------------------
+    // STEP 4: RUNNING MANTA
+    // 
+    MANTA ( ch_manta )
     // ==================================================
 
 }

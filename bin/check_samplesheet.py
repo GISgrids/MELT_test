@@ -46,7 +46,7 @@ def check_samplesheet(file_in, file_out):
 
         ## Check header
         MIN_COLS = 3
-        HEADER = ["sample","mapped","index"]
+        HEADER = ["sample","mapped","index","mantavcf"]
         header = [x.strip('"') for x in fin.readline().strip().split(",")]
         if header[:len(HEADER)] != HEADER:
             print(
@@ -76,7 +76,7 @@ def check_samplesheet(file_in, file_out):
                     )
 
                 ## Check sample name entries
-                sample, mapped, index = lspl[: len(HEADER)]
+                sample, mapped, index, mantavcf = lspl[: len(HEADER)]
                 if sample.find(" ") != -1:
                     print(
                         f"WARNING: Spaces have been replaced by underscores for sample: {sample}"
@@ -87,7 +87,7 @@ def check_samplesheet(file_in, file_out):
 
                 sample_info = []  ## [single_end, fastq_1, fastq_2, strandedness]
                 if sample and mapped and index:  ## Paired-end short reads
-                    sample_info = [sample, mapped, index]
+                    sample_info = [sample, mapped, index, mantavcf]
                 else:
                     print_error("Invalid combination of columns provided!", "Line", line)
 
@@ -106,7 +106,7 @@ def check_samplesheet(file_in, file_out):
         make_dir(out_dir)
         with open(file_out, "w") as fout:
             fout.write(
-                ",".join(["sample", "mapped", "index"])
+                ",".join(["sample", "mapped", "index", "mantavcf"])
                 + "\n"
             )
             for sample in sorted(sample_mapping_dict.keys()):

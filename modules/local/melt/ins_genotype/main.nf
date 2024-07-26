@@ -20,7 +20,7 @@ process MELT_INS_GENOTYPE {
 
     output:
     path("*/*/*.tsv")                                  , emit: meltgenotype_ch
-    // path "versions.yml"                 , emit: versions
+    path "versions.yml"                 , emit: versions
 
     when: 
     task.ext.when == null || task.ext.when
@@ -36,6 +36,7 @@ process MELT_INS_GENOTYPE {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "$meta.id"
+    def MELT_VERSION = '2.2.2'
     
     """
     mkdir -p ${mobileElementIns}_DISCOVERY/Genotype
@@ -47,13 +48,12 @@ process MELT_INS_GENOTYPE {
         -h ${fasta} \\
         -p ./${mobileElementIns}_DISCOVERY \\
         -w ./${mobileElementIns}_DISCOVERY/Genotype
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        MELT: ${MELT_VERSION}
+    END_VERSIONS
     """
-
-    // cat <<-END_VERSIONS > versions.yml
-    // "${task.process}":
-    //    melt: \$(samtools --version |& sed '1!d ; s/samtools //')
-    // END_VERSIONS
-    // """
 
     // stub: ####
     // def args = task.ext.args ?: ''

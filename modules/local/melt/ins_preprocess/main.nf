@@ -17,9 +17,8 @@ process MELT_INS_PREPROCESS {
     path fai
 
     output:
-    tuple val(meta), path("MELT_INS_Preprocess/*"),    emit: meltpreprocess_ch
-
-    // path "versions.yml"                 , emit: versions
+    tuple val(meta), path("MELT_INS_Preprocess/*")      , emit: meltpreprocess_ch
+    path "versions.yml"                                 , emit: versions
 
     when: 
     task.ext.when == null || task.ext.when
@@ -31,6 +30,7 @@ process MELT_INS_PREPROCESS {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "$meta.id"
+    def MELT_VERSION = '2.2.2'
     
     """
     mkdir MELT_INS_Preprocess
@@ -39,6 +39,11 @@ process MELT_INS_PREPROCESS {
         -bamfile ${input} \\
         -h ${fasta}
     mv `ls *.cram* *.bam*` MELT_INS_Preprocess
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        MELT: ${MELT_VERSION}
+    END_VERSIONS
     """
 
     // cat <<-END_VERSIONS > versions.yml

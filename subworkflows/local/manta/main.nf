@@ -9,7 +9,6 @@
 ----------------------------------------------------------------------------------------
 */
 
-nextflow.enable.dsl = 2
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,8 +42,7 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { EVIDENCE_COLLECTION } from './workflows/local/evidence_collection'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils/pipeline-initialisation'
+include { MANTA_SV } from '../../../modules/local/manta' 
 
 
 /*
@@ -53,35 +51,19 @@ include { PIPELINE_INITIALISATION } from './subworkflows/local/utils/pipeline-in
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow SV_PIPELINE {
+workflow MANTA {
     
-    take:
-    ch_alignmentfiles // channel: 
-    ch_manta
+    // Inputs
+	take:
+    samplesheet
 
+    // Modules 
     main:
 
-    // 
-    // Workflow: Run SV calling Evidence Collection pipeline
-    //
-    EVIDENCE_COLLECTION (
-        ch_alignmentfiles,
-        ch_manta
-    )
-
-}
-
-
-workflow {
-    
-    // Run the Pipeline initialisation subworkflow, containing modules samplesheet_check and cramtobam
-    PIPELINE_INITIALISATION (
-        params.input
-    )
-
-    SV_PIPELINE (
-        PIPELINE_INITIALISATION.out.ch_alignmentfiles,
-        PIPELINE_INITIALISATION.out.ch_manta
+    MANTA_SV (
+        samplesheet, 
+        params.fasta, 
+        params.fai
     )
 
 }

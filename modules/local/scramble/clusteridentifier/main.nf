@@ -16,7 +16,7 @@ process SCRAMBLE_CLUSTERIDENTIFIER {
 
     output:
     tuple val(meta), path("cluster_identifier_files/*.clusters.txt") , emit: clusters
-    //path "versions.yml"                     , emit: versions
+    path "versions.yml"                     , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -24,7 +24,7 @@ process SCRAMBLE_CLUSTERIDENTIFIER {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def VERSION = '1.0.1' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+    def VERSION = '1.0.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
     // The tool does not contain a way to specify the reference file when using CRAM files.
     // It just looks in the header of the CRAM file where the reference file is located,
@@ -45,11 +45,10 @@ process SCRAMBLE_CLUSTERIDENTIFIER {
     mkdir cluster_identifier_files
     mv *.clusters.txt cluster_identifier_files
 
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        scramble: ${VERSION}
+    END_VERSIONS
     """
-    
-    //cat <<-END_VERSIONS > versions.yml
-    //"${task.process}":
-    //    scramble: ${VERSION}
-    //END_VERSIONS
 
 }

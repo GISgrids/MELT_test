@@ -14,7 +14,7 @@ process WHAMG_SV {
     tuple val(meta), path("*.vcf")          , emit: whamg_vcf
     tuple val(meta), path("*.vcf.gz.tbi")   , emit: tbi, optional: true
     tuple val(meta), path("*.txt")          , emit: graph, optional: true
-    //path "versions.yml"                     , emit: versions
+    path "versions.yml"                     , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -34,16 +34,15 @@ process WHAMG_SV {
         -a ${fasta} \\
         $args \\
         > ${prefix}.vcf
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        whamg: \$(echo \$(whamg 2>&1 | grep Version | sed 's/^Version: v//; s/-.*\$//' ))
+    END_VERSIONS
     """
 
     // | bgzip ${args2} --threads ${task.cpus} --stdout > ${prefix}.vcf.gz
 
     // tabix ${args3} ${prefix}.vcf.gz
-
-
-    //cat <<-END_VERSIONS > versions.yml
-    //"${task.process}":
-    //    whamg: \$(echo \$(whamg 2>&1 | grep Version | sed 's/^Version: v//; s/-.*\$//' ))
-    //END_VERSIONS
 
 }

@@ -20,7 +20,7 @@ process MELT_INS_GROUPANALYSIS {
 
     output:
     path("*/*/${mobileElementIns}*")    , emit: meltgroupanalysis_ch  
-    // path "versions.yml"                 , emit: versions
+    path "versions.yml"                 , emit: versions
 
     when: 
     task.ext.when == null || task.ext.when
@@ -43,7 +43,7 @@ process MELT_INS_GROUPANALYSIS {
 
     script:
     def args = task.ext.args ?: ''
-    // def prefix = task.ext.prefix ?: "$meta.id"
+    def MELT_VERSION = '2.2.2'
     
     """
     mkdir -p ${mobileElementIns}_DISCOVERY/GroupAnalysis
@@ -55,13 +55,12 @@ process MELT_INS_GROUPANALYSIS {
         -t /opt/me_refs/Hg38/${mobileElementIns}_MELT.zip \\
         -h ${fasta} \\
         -n /opt/add_bed_files/Hg38/Hg38.genes.bed
-    """
 
-    // cat <<-END_VERSIONS > versions.yml
-    // "${task.process}":
-    //    melt: \$(samtools --version |& sed '1!d ; s/samtools //')
-    // END_VERSIONS
-    // """
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        MELT: ${MELT_VERSION}
+    END_VERSIONS
+    """
 
     // stub: ####
     // def args = task.ext.args ?: ''

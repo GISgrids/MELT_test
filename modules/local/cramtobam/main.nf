@@ -11,8 +11,8 @@ process CRAMTOBAM {
     path fai
 
     output:
-    tuple val(meta), path("*.bam",includeInputs:true), path("*.bai",includeInputs:true)          , emit: ch_alignmentfiles
-    //path "versions.yml"                     , emit: versions
+    tuple val(meta), path("*.bam",includeInputs:true), path("*.bai",includeInputs:true)       
+    path "versions.yml"                     , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -26,11 +26,11 @@ process CRAMTOBAM {
         samtools view -b -h -T GRCh38_broad.fasta -o \${sampleName}.bam \${sampleName}.cram
         samtools index \${sampleName}.bam
     fi
-    """
 
-    //cat <<-END_VERSIONS > versions.yml
-    //"${task.process}":
-    //    whamg: \$(echo \$(whamg 2>&1 | grep Version | sed 's/^Version: v//; s/-.*\$//' ))
-    //END_VERSIONS
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
+    END_VERSIONS
+    """
 
 }

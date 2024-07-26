@@ -17,15 +17,16 @@ process MELT_DELMERGE {
     path fai
 
     output:
-    path("*/*.vcf")  , emit: meltdelmerge_ch
-    // path "versions.yml"                 , emit: versions
+    path("*/*.vcf")                     , emit: meltdelmerge_ch
+    path "versions.yml"                 , emit: versions
 
     when: 
     task.ext.when == null || task.ext.when
 
     script:
     def args = task.ext.args ?: ''
-    
+    def MELT_VERSION = '2.2.2'
+
     //
     // Generation of MELT Deletion's final merged VCF 
     //
@@ -41,13 +42,12 @@ process MELT_DELMERGE {
       -o ${mobileElementDel}_DELETION
     
     mv ./${mobileElementDel}_DELETION/DEL.final_comp.vcf ./${mobileElementDel}_DELETION/MELT_Deletion_${mobileElementDel}_merged.vcf
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        MELT: ${MELT_VERSION}
+    END_VERSIONS
     """
-
-    // cat <<-END_VERSIONS > versions.yml
-    // "${task.process}":
-    //    melt: \$(samtools --version |& sed '1!d ; s/samtools //')
-    // END_VERSIONS
-    // """
 
     // stub: ####
     // def args = task.ext.args ?: ''
