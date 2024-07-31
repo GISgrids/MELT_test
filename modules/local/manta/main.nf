@@ -37,17 +37,17 @@ process MANTA_SV {
 
     mkdir candidate_small_indels candidate_sv diploid_sv
     mv manta/results/variants/candidateSmallIndels.vcf.gz \\
-        candidate_small_indels/${prefix}.candidate_small_indels.vcf.gz
+        candidate_small_indels/MANTA_${prefix}.candidate_small_indels.vcf.gz
     mv manta/results/variants/candidateSmallIndels.vcf.gz.tbi \\
-        candidate_small_indels/${prefix}.candidate_small_indels.vcf.gz.tbi
+        candidate_small_indels/MANTA_${prefix}.candidate_small_indels.vcf.gz.tbi
     mv manta/results/variants/candidateSV.vcf.gz \\
-        candidate_sv/${prefix}.candidate_sv.vcf.gz
+        candidate_sv/MANTA_${prefix}.candidate_sv.vcf.gz
     mv manta/results/variants/candidateSV.vcf.gz.tbi \\
-        candidate_sv/${prefix}.candidate_sv.vcf.gz.tbi
+        candidate_sv/MANTA_${prefix}.candidate_sv.vcf.gz.tbi
     mv manta/results/variants/diploidSV.vcf.gz \\
-        diploid_sv/${prefix}.diploid_sv.vcf.gz
+        diploid_sv/MANTA_${prefix}.diploid_sv.vcf.gz
     mv manta/results/variants/diploidSV.vcf.gz.tbi \\
-        diploid_sv/${prefix}.diploid_sv.vcf.gz.tbi
+        diploid_sv/MANTA_${prefix}.diploid_sv.vcf.gz.tbi
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -2,7 +2,6 @@ process WHAMG_SV {
     tag "$meta.id"
     label 'process_low'
 
-    //container 'shuangbroad/whamg:clean'
     container 'bioinfo4cabbage/whamg:1.0'
 
     input:
@@ -11,8 +10,9 @@ process WHAMG_SV {
     path fai
 
     output:
-    tuple val(meta), path("*.vcf")          , emit: whamg_vcf
-    tuple val(meta), path("*.vcf.gz.tbi")   , emit: tbi, optional: true
+    //tuple val(meta), path("*.vcf")          , emit: whamg_vcf
+    tuple val(meta), path("*.vcf.gz")       , emit: whamg_vcfgz
+    tuple val(meta), path("*.vcf.gz.tbi")   , emit: whamg_vcfgztbi
     tuple val(meta), path("*.txt")          , emit: graph, optional: true
     path "versions.yml"                     , emit: versions
 
@@ -33,11 +33,17 @@ process WHAMG_SV {
         -f ${input} \\
         -a ${fasta} \\
         $args \\
-        > ${prefix}.vcf
+        > WHAMG_${prefix}.vcf
+
+    bcftools view WHAMG_${prefix}.vcf -O z \\
+        -o WHAMG_${prefix}.vcf.gz
+    bcftools index --tbi WHAMG_${prefix}.vcf.gz
+
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         whamg: \$(echo \$(whamg 2>&1 | grep Version | sed 's/^Version: v//; s/-.*\$//' ))
+        bcftools: \$(echo \$(bcftools 2>&1 | grep Version | sed 's/^Version: //'))
     END_VERSIONS
     """
 

@@ -77,6 +77,7 @@ workflow MELT_DELETION {
         params.fasta, 
         params.fai
     )
+
 }
 
 /*

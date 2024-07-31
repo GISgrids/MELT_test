@@ -65,7 +65,6 @@ workflow WHAMG {
         params.fasta, 
         params.fai
     )
-
 }
 
 /*

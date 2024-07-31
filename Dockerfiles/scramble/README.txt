@@ -1,5 +1,5 @@
-UPDATED: 26 JULY 2024
+UPDATED: 31 JULY 2024
 
-You need to clone scramble's Github repository, and replace the Docker file from the cloned repository with the Dockerfile accompanying this README.txt.
+You need to clone the edited scramble Github repository (available in the GISGrids Organization on Github), and run docker build on that repo.
 
-git clone https://github.com/GeneDx/scramble.git 
+git clone https://github.com/GISgrids/scramble-edited-program.git

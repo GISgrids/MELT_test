@@ -19,7 +19,9 @@ process SCRAMBLE_CLUSTERANALYSIS {
     output:
     tuple val(meta), path("cluster_analysis_files/*_MEIs.txt")                  , optional:true, emit: meis_tab
     tuple val(meta), path("cluster_analysis_files/*_PredictedDeletions.txt")    , optional:true, emit: dels_tab
-    tuple val(meta), path("*.vcf")                                              , optional:true, emit: vcf
+    //tuple val(meta), path("*.vcf")                                              , optional:true, emit: scramble_vcf
+    tuple val(meta), path("*.vcf.gz")                                           , optional:true, emit: scramble_vcfgz
+    tuple val(meta), path("*.vcf.gz.tbi")                                       , optional:true, emit: scramble_vcfgztbi
     path "versions.yml"                                                         , emit: versions
 
     when:
@@ -52,6 +54,11 @@ process SCRAMBLE_CLUSTERANALYSIS {
     
     mkdir cluster_analysis_files
     mv *.txt cluster_analysis_files
+
+    mv ${prefix}.vcf SCRAMBLE_${prefix}.vcf
+    bcftools sort SCRAMBLE_${prefix}.vcf > SCRAMBLE_${prefix}_sorted.vcf
+    bcftools view SCRAMBLE_${prefix}_sorted.vcf -O z -o SCRAMBLE_${prefix}_sorted.vcf.gz
+    bcftools index --tbi SCRAMBLE_${prefix}_sorted.vcf.gz
     
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

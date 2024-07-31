@@ -107,7 +107,7 @@ workflow MELT_INSERTION {
         params.fasta, 
         params.fai
     )
-
+    
 }
 
 /*

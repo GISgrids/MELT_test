@@ -19,8 +19,10 @@ process MELT_INS_MAKEVCF {
     path fai
 
     output:
-    path("*/*/*.vcf")               , emit: meltmakevcf_ch
-    path "versions.yml"             , emit: versions
+    //path("*/*/*.vcf")               , emit: meltmakevcf_ch
+    path("*/*/*.vcf.gz")                    , emit: meltmakevcfgz_ch
+    path("*/*/*.vcf.gz.tbi")                , emit: meltmakevcfgz_tbi_ch
+    path "versions.yml"                     , emit: versions
 
     when: 
     task.ext.when == null || task.ext.when
@@ -53,6 +55,12 @@ process MELT_INS_MAKEVCF {
         -p ${mobileElementIns}_DISCOVERY/GroupAnalysis \\
         -o ${mobileElementIns}_DISCOVERY/FINAL_VCF
     
+    mv ${mobileElementIns}_DISCOVERY/FINAL_VCF/${mobileElementIns}.final_comp.vcf ${mobileElementIns}_DISCOVERY/FINAL_VCF/MELT_Insertion_${mobileElementIns}_merged.vcf
+    bcftools sort ${mobileElementIns}_DISCOVERY/FINAL_VCF/MELT_Insertion_${mobileElementIns}_merged.vcf > ${mobileElementIns}_DISCOVERY/FINAL_VCF/MELT_Insertion_${mobileElementIns}_merged_sorted.vcf
+    bcftools view ${mobileElementIns}_DISCOVERY/FINAL_VCF/MELT_Insertion_${mobileElementIns}_merged_sorted.vcf -O z \\
+        -o ${mobileElementIns}_DISCOVERY/FINAL_VCF/MELT_Insertion_${mobileElementIns}_merged_sorted.vcf.gz
+    bcftools index --tbi ${mobileElementIns}_DISCOVERY/FINAL_VCF/MELT_Insertion_${mobileElementIns}_merged_sorted.vcf.gz
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         MELT: ${MELT_VERSION}

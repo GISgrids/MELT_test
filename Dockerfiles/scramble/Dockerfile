@@ -12,6 +12,7 @@ RUN apt-get clean all && \
         autoconf \
         autogen \
         build-essential \
+	bcftools \
         curl \
         libbz2-dev \
         libcurl4-gnutls-dev \

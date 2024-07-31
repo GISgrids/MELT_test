@@ -17,7 +17,9 @@ process MELT_DELMERGE {
     path fai
 
     output:
-    path("*/*.vcf")                     , emit: meltdelmerge_ch
+    //path("*/*.vcf")                     , emit: meltdelmerge_ch
+    path("*/*.vcf.gz")                  , emit: meltdelmerge_vcfgz_ch
+    path("*/*.vcf.gz.tbi")              , emit: meltdelmerge_vcfgztbi_ch
     path "versions.yml"                 , emit: versions
 
     when: 
@@ -41,11 +43,21 @@ process MELT_DELMERGE {
       -h ${fasta} \\
       -o ${mobileElementDel}_DELETION
     
-    mv ./${mobileElementDel}_DELETION/DEL.final_comp.vcf ./${mobileElementDel}_DELETION/MELT_Deletion_${mobileElementDel}_merged.vcf
+    mv ./${mobileElementDel}_DELETION/DEL.final_comp.vcf ./${mobileElementDel}_DELETION/MELT_Deletion_${mobileElementDel}_merged_before.vcf
+    
+    sed 's/End coordinate of this variant">\\(.*\\)/End coordinate of this variant">\\n\\1/' \\
+        ${mobileElementDel}_DELETION/MELT_Deletion_${mobileElementDel}_merged_before.vcf > \\
+        ${mobileElementDel}_DELETION/MELT_Deletion_${mobileElementDel}_merged.vcf
+
+    bcftools sort ${mobileElementDel}_DELETION/MELT_Deletion_${mobileElementDel}_merged.vcf > ${mobileElementDel}_DELETION/MELT_Deletion_${mobileElementDel}_merged_sorted.vcf
+    bcftools view ${mobileElementDel}_DELETION/MELT_Deletion_${mobileElementDel}_merged_sorted.vcf -O z \\
+        -o ${mobileElementDel}_DELETION/MELT_Deletion_${mobileElementDel}_merged_sorted.vcf.gz
+    bcftools index --tbi ${mobileElementDel}_DELETION/MELT_Deletion_${mobileElementDel}_merged_sorted.vcf.gz
     
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         MELT: ${MELT_VERSION}
+        bcftools: \$(echo \$(bcftools 2>&1 | grep Version | sed 's/^Version: //'))
     END_VERSIONS
     """
 

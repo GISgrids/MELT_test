@@ -74,6 +74,7 @@ workflow EVIDENCE_COLLECTION {
     
     // --------------------------------------------------
     // STEP 2:
+    // Error will most likely occur when running on small subset of genome, e.g. chr22. Consider NOT running Whamg if dealing with such.
     //
     if (params.cramtobam) {
         WHAMG ( ch_alignmentfiles )
@@ -83,6 +84,7 @@ workflow EVIDENCE_COLLECTION {
 
     // --------------------------------------------------
     // STEP 3: RUNNING SCRAMBLE
+    // Error will most likely occur when running on small subset of genome, e.g. chr22. Consider NOT running scramble if dealing with such.
     // 
     SCRAMBLE ( ch_alignmentfiles )
     // ==================================================
