@@ -5,6 +5,9 @@ process SAMPLESHEET_CHECK {
 
     // todo: do we need a docker container containing python3 to be able to run the python script if we run this pipeline on NF-Tower?
     // if not, can ignore this line.
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/python:3.9--1' :
+        'quay.io/biocontainers/python:3.9--1' }"
 
     input:
     path inputsheet
@@ -22,7 +25,7 @@ process SAMPLESHEET_CHECK {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python --version | sed 's/Python //g')
+        python: \$(python3 --version | sed 's/Python //g')
     END_VERSIONS
     """
 }

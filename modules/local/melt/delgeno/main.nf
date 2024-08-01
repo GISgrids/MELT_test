@@ -9,7 +9,7 @@ process MELT_DELGENO {
     //    'https://depot.galaxyproject.org/singularity/melt:1.0.3--py36_2':
     //    'biocontainers/melt:1.0.3--py36_2' }"
     //conda (params.enable_conda ? "conda-forge::python=3.9.5" : null)
-    container 'bioinfo4cabbage/melt:1.0'
+    container 'docker.io/bioinfo4cabbage/melt:1.0'
 
     input:
     tuple val(meta), path(input), path(input_index)

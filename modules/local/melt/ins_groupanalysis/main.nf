@@ -9,7 +9,7 @@ process MELT_INS_GROUPANALYSIS {
     //    'https://depot.galaxyproject.org/singularity/melt:1.0.3--py36_2':
     //    'biocontainers/melt:1.0.3--py36_2' }"
     //conda (params.enable_conda ? "conda-forge::python=3.9.5" : null)
-    container 'bioinfo4cabbage/melt:1.0'
+    container 'docker.io/bioinfo4cabbage/melt:1.0'
 
     input:
     path meltindivanalysis_bam_ch
@@ -62,20 +62,24 @@ process MELT_INS_GROUPANALYSIS {
     END_VERSIONS
     """
 
-    // stub: ####
-    // def args = task.ext.args ?: ''
-    // def prefix = task.ext.prefix ?: "${meta.id}"
-    // TODO nf-core: A stub section should mimic the execution of the original module as best as possible
-    //               Have a look at the following examples:
-    //               Simple example: https://github.com/nf-core/modules/blob/818474a292b4860ae8ff88e149fbcda68814114d/modules/nf-core/bcftools/annotate/main.nf#L47-L63
-    //               Complex example: https://github.com/nf-core/modules/blob/818474a292b4860ae8ff88e149fbcda68814114d/modules/nf-core/bedtools/split/main.nf#L38-L54
-    
-    // """ ####
-    // touch ${prefix}.bam
 
-    // cat <<-END_VERSIONS > versions.yml
-    // "${task.process}":
-    //     melt: \$(samtools --version |& sed '1!d ; s/samtools //')
-    // END_VERSIONS
-    // """
+    stub: 
+    def args = task.ext.args ?: ''
+    def MELT_VERSION = '2.2.2'
+    
+    """
+    mkdir -p ${mobileElementIns}_DISCOVERY/GroupAnalysis
+
+    touch ${mobileElementIns}_DISCOVERY/GroupAnalysis/${mobileElementIns}.bed.list
+    touch ${mobileElementIns}_DISCOVERY/GroupAnalysis/${mobileElementIns}.hum.list
+    touch ${mobileElementIns}_DISCOVERY/GroupAnalysis/${mobileElementIns}.master.bed
+    touch ${mobileElementIns}_DISCOVERY/GroupAnalysis/${mobileElementIns}.merged.hum_breaks.sorted.bam
+    touch ${mobileElementIns}_DISCOVERY/GroupAnalysis/${mobileElementIns}.merged.hum_breaks.sorted.bam.bai
+    touch ${mobileElementIns}_DISCOVERY/GroupAnalysis/${mobileElementIns}.pre_geno.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        MELT: ${MELT_VERSION}
+    END_VERSIONS
+    """
 }

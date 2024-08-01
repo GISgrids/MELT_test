@@ -4,10 +4,9 @@ process SCRAMBLE_CLUSTERANALYSIS {
     debug true
     
     //conda "${moduleDir}/environment.yml"
-    //container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-    //    'https://depot.galaxyproject.org/singularity/scramble:1.0.1--h779adbc_1':
-    //    'biocontainers/scramble:1.0.1--h779adbc_1' }"
-    container 'bioinfo4cabbage/scramble-edited:latest'
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/scramble:1.0.1--h779adbc_1':
+        'docker.io/bioinfo4cabbage/scramble-edited:latest' }"
 
     // Edited the "do.dels.R" and "make.vcf.R" scripts during the creation of the Docker image.
 
@@ -60,6 +59,25 @@ process SCRAMBLE_CLUSTERANALYSIS {
     bcftools view SCRAMBLE_${prefix}_sorted.vcf -O z -o SCRAMBLE_${prefix}_sorted.vcf.gz
     bcftools index --tbi SCRAMBLE_${prefix}_sorted.vcf.gz
     
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        scramble: ${VERSION}
+        blast_db: ${blastdb_version}
+    END_VERSIONS
+    """
+
+
+    stub: 
+    def args = task.ext.args ?: ''
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    def VERSION = '1.0.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
+    def blastdb_version = "makeblastdb: \$(echo \$(makeblastdb -version 2>&1) | head -n 1 | sed 's/^makeblastdb: //; s/+ Package.*\$//')"
+    
+    """
+    touch SCRAMBLE_${prefix}_sorted.vcf
+    touch SCRAMBLE_${prefix}_sorted.vcf.gz
+    touch SCRAMBLE_${prefix}_sorted.vcf.gz.tbi
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         scramble: ${VERSION}

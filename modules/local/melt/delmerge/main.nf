@@ -8,7 +8,7 @@ process MELT_DELMERGE {
     // container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
     //    'https://depot.galaxyproject.org/singularity/melt:1.0.3--py36_2':
     //    'biocontainers/melt:1.0.3--py36_2' }"
-    container 'bioinfo4cabbage/melt:1.0'
+    container 'docker.io/bioinfo4cabbage/melt:1.0'
 
     input:
     path meltdelgeno_ch

@@ -1,8 +1,10 @@
 process MANTA_SV {
     tag "$meta.id"
     label 'process_low'
-
-    container 'kfdrc/manta:1.6.0'
+    
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/manta:1.6.0--h9ee0642_1' :
+        'biocontainers/manta:1.6.0--h9ee0642_1' }"
 
     input:
     tuple val(meta), path(input), path(input_index)
@@ -27,7 +29,7 @@ process MANTA_SV {
 
     """
     mkdir manta
-    /manta-1.6.0.centos6_x86_64/bin/configManta.py \\
+    /usr/local/share/manta-1.6.0-1/bin/configManta.py \\
         --bam ${input} \\
         --referenceFasta GRCh38_broad.fasta \\
         --runDir manta \\
@@ -51,7 +53,27 @@ process MANTA_SV {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        manta: \$(echo \$(/manta-1.6.0.centos6_x86_64/bin/configManta.py 2>&1 | grep 'Version' | sed 's/^Version: //'))
+        manta: \$(echo \$(/usr/local/share/manta-1.6.0-1/bin/configManta.py 2>&1 | grep 'Version' | sed 's/^Version: //'))
+    END_VERSIONS
+    """
+
+    stub: 
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    def args = task.ext.args ?: ''
+    
+    """
+    mkdir candidate_small_indels candidate_sv diploid_sv
+    
+    touch candidate_small_indels/MANTA_${prefix}.candidate_small_indels.vcf.gz
+    touch candidate_small_indels/MANTA_${prefix}.candidate_small_indels.vcf.gz.tbi
+    touch candidate_sv/MANTA_${prefix}.candidate_sv.vcf.gz
+    touch candidate_sv/MANTA_${prefix}.candidate_sv.vcf.gz.tbi
+    touch diploid_sv/MANTA_${prefix}.diploid_sv.vcf.gz
+    touch diploid_sv/MANTA_${prefix}.diploid_sv.vcf.gz.tbi
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        manta: \$(echo \$(/usr/local/share/manta-1.6.0-1/bin/configManta.py 2>&1 | grep 'Version' | sed 's/^Version: //'))
     END_VERSIONS
     """
 

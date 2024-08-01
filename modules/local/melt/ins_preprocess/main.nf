@@ -9,7 +9,7 @@ process MELT_INS_PREPROCESS {
     //    'https://depot.galaxyproject.org/singularity/melt:1.0.3--py36_2':
     //    'biocontainers/melt:1.0.3--py36_2' }"
     //conda (params.enable_conda ? "conda-forge::python=3.9.5" : null)
-    container 'bioinfo4cabbage/melt:1.0'
+    container 'docker.io/bioinfo4cabbage/melt:1.0'
 
     input:
     tuple val(meta), path(input), path(input_index)
@@ -46,26 +46,22 @@ process MELT_INS_PREPROCESS {
     END_VERSIONS
     """
 
-    // cat <<-END_VERSIONS > versions.yml
-    // "${task.process}":
-    //    melt: \$(samtools --version |& sed '1!d ; s/samtools //')
-    // END_VERSIONS
-    // """
-
-    // stub: ####
-    // def args = task.ext.args ?: ''
-    // def prefix = task.ext.prefix ?: "${meta.id}"
-    // TODO nf-core: A stub section should mimic the execution of the original module as best as possible
-    //               Have a look at the following examples:
-    //               Simple example: https://github.com/nf-core/modules/blob/818474a292b4860ae8ff88e149fbcda68814114d/modules/nf-core/bcftools/annotate/main.nf#L47-L63
-    //               Complex example: https://github.com/nf-core/modules/blob/818474a292b4860ae8ff88e149fbcda68814114d/modules/nf-core/bedtools/split/main.nf#L38-L54
+    stub: 
+    def args = task.ext.args ?: ''
+    def prefix = task.ext.prefix ?: "$meta.id"
+    def MELT_VERSION = '2.2.2'
     
-    // """ ####
-    // touch ${prefix}.bam
+    """
+    mkdir MELT_INS_Preprocess
 
-    // cat <<-END_VERSIONS > versions.yml
-    // "${task.process}":
-    //     melt: \$(samtools --version |& sed '1!d ; s/samtools //')
-    // END_VERSIONS
-    // """
+    touch MELT_INS_Preprocess/${input}.disc
+    touch MELT_INS_Preprocess/${input}.disc.bai
+    touch MELT_INS_Preprocess/${input}.fq
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        MELT: ${MELT_VERSION}
+    END_VERSIONS
+    """
+
 }

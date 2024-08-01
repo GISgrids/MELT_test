@@ -9,7 +9,7 @@ process MELT_INS_MAKEVCF {
     //    'https://depot.galaxyproject.org/singularity/melt:1.0.3--py36_2':
     //    'biocontainers/melt:1.0.3--py36_2' }"
     //conda (params.enable_conda ? "conda-forge::python=3.9.5" : null)
-    container 'bioinfo4cabbage/melt:1.0'
+    container 'docker.io/bioinfo4cabbage/melt:1.0'
 
     input:
     path meltgroupanalysis_ch
@@ -67,21 +67,22 @@ process MELT_INS_MAKEVCF {
     END_VERSIONS
     """
 
-    // stub: ####
-    // def args = task.ext.args ?: ''
-    // def prefix = task.ext.prefix ?: "${meta.id}"
-    // TODO nf-core: A stub section should mimic the execution of the original module as best as possible
-    //               Have a look at the following examples:
-    //               Simple example: https://github.com/nf-core/modules/blob/818474a292b4860ae8ff88e149fbcda68814114d/modules/nf-core/bcftools/annotate/main.nf#L47-L63
-    //               Complex example: https://github.com/nf-core/modules/blob/818474a292b4860ae8ff88e149fbcda68814114d/modules/nf-core/bedtools/split/main.nf#L38-L54
+    stub: 
+    def args = task.ext.args ?: ''
+    def MELT_VERSION = '2.2.2'
     
-    // """ ####
-    // touch ${prefix}.bam
+    """
+    mkdir -p ${mobileElementIns}_DISCOVERY/FINAL_VCF
 
-    // cat <<-END_VERSIONS > versions.yml
-    // "${task.process}":
-    //     melt: \$(samtools --version |& sed '1!d ; s/samtools //')
-    // END_VERSIONS
-    // """
+    touch ${mobileElementIns}_DISCOVERY/FINAL_VCF/MELT_Insertion_${mobileElementIns}_merged_sorted.vcf
+    touch ${mobileElementIns}_DISCOVERY/FINAL_VCF/MELT_Insertion_${mobileElementIns}_merged_sorted.vcf.gz
+    touch ${mobileElementIns}_DISCOVERY/FINAL_VCF/MELT_Insertion_${mobileElementIns}_merged_sorted.vcf.gz.tbi
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        MELT: ${MELT_VERSION}
+    END_VERSIONS
+    """
+    
 }
 
