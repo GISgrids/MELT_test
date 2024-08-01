@@ -47,8 +47,9 @@ First, prepare a samplesheet with your input data that looks as follows:
 `samplesheet.csv`:
 
 ```csv
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
+sample,mapped,index,mantavcf(optional)
+sample1,sample1.{cram,bam},sample1.{cram.crai,bam.bai},/path/to/manta.vcf
+sample2,sample2.{cram,bam},sample2.{cram.crai,bam.bai}
 ```
 
 Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
