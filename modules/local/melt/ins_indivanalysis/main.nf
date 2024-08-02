@@ -67,13 +67,13 @@ process MELT_INS_INDIVANALYSIS {
     """
     mkdir -p ${mobileElementIns}_DISCOVERY/IndivAnalysis
 
-    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${input}.${mobileElementIns}.aligned.final.sorted.bam
-    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${input}.${mobileElementIns}.aligned.final.sorted.bam.bai
-    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${input}.${mobileElementIns}.aligned.pulled.sorted.bam
-    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${input}.${mobileElementIns}.aligned.pulled.sorted.bam.bai
-    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${input}.${mobileElementIns}.hum_breaks.sorted.bam
-    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${input}.${mobileElementIns}.hum_breaks.sorted.bam.bai
-    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${input}.${mobileElementIns}.tmp.bed
+    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${prefix}.${mobileElementIns}.aligned.final.sorted.bam
+    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${prefix}.${mobileElementIns}.aligned.final.sorted.bam.bai
+    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${prefix}.${mobileElementIns}.aligned.pulled.sorted.bam
+    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${prefix}.${mobileElementIns}.aligned.pulled.sorted.bam.bai
+    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${prefix}.${mobileElementIns}.hum_breaks.sorted.bam
+    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${prefix}.${mobileElementIns}.hum_breaks.sorted.bam.bai
+    touch ${mobileElementIns}_DISCOVERY/IndivAnalysis/${prefix}.${mobileElementIns}.tmp.bed
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
